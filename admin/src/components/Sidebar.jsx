@@ -13,6 +13,9 @@ const Sidebar = () => {
           <Link to="/manage-child-marriage-cases" className="block py-2 px-4 rounded hover:bg-gray-700">Child Marriage Cases</Link>
         </li>
         <li className="mb-4">
+          <Link to="/seed-distribution" className="block py-2 px-4 rounded hover:bg-gray-700">Seed Distribution</Link>
+        </li>
+        <li className="mb-4">
           <Link to="/manage-sliders" className="block py-2 px-4 rounded hover:bg-gray-700">Manage Sliders</Link>
         </li>
         <li className="mb-4">

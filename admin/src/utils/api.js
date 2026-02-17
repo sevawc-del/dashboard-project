@@ -41,6 +41,14 @@ export const updateChildMarriageCase = (id, data) => api.put(`/child-marriage-ca
 export const deleteChildMarriageCase = (id) => api.delete(`/child-marriage-cases/${id}`);
 
 
+// Seed Distribution
+export const getSeedDistributions = () => api.get('/seed-distributions');
+export const getSeedDistributionById = (id) => api.get(`/seed-distributions/${id}`);
+export const createSeedDistribution = (data) => api.post('/seed-distributions', data);
+export const updateSeedDistribution = (id, data) => api.put(`/seed-distributions/${id}`, data);
+export const deleteSeedDistribution = (id) => api.delete(`/seed-distributions/${id}`);
+
+
 
 // Users
 // export const getUsers = () => api.get('/auth/users');

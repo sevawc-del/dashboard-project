@@ -82,6 +82,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/child-marriage-cases', require('./routes/childMarriageCaseRoutes'));
 app.use('/api/users', require('./routes/userRoutes.js'));
+app.use('/api/seed-distributions', require('./routes/seedDistributionRoutes'));
+
 
 
 // Error handler (keep LAST)

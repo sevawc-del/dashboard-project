@@ -4,6 +4,7 @@ import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import ManageSliders from '../pages/ManageSliders';
 import ManageChildMarriageCases from '../pages/ManageChildMarriageCases';
+import SeedDistribution from '../pages/SeedDistribution';
 import Users from '../pages/Users';
 import Settings from '../pages/Settings';
 import Sidebar from '../components/Sidebar';
@@ -24,6 +25,7 @@ const AppRoutes = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/manage-sliders" element={<ManageSliders />} />
                 <Route path="/manage-child-marriage-cases" element={<ManageChildMarriageCases />} />
+                <Route path="/seed-distribution" element={<SeedDistribution />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
