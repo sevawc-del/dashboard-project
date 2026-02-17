@@ -17,7 +17,7 @@ const seedDistributionSchema = new mongoose.Schema({
   aadharNumber: { type: String, required: true },
   
   // Seed & Fertilizer Details
-  maizeSeedPacket: { type: Number, default: 0 },
+  maizeSeedPacket: { type: String, default: 0 },
   zincSulphate: { type: Number, default: 0 },
   atrazine: { type: Number, default: 0 },
   oorja: { type: Number, default: 0 },
