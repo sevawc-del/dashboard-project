@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from '../components/DataTable';
+import ExportToExcel from "../components/ExportToExcel";
+
 import { 
   getChildMarriageCases, 
   createChildMarriageCase, 
@@ -79,13 +81,16 @@ const ManageChildMarriageCases = () => {
   };
 
   const handleDelete = async (id) => {
+     if (!window.confirm('Are you sure you want to delete this slider?')) return;
     try {
       await deleteChildMarriageCase(id);
       fetchCases();
     } catch (error) {
-      console.error(error);
+       console.error('Failed to delete slider:', error);
+      alert('Failed to delete slider');
     }
   };
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -204,6 +209,13 @@ const ManageChildMarriageCases = () => {
           </button>
         )}
       </form>
+<div className="flex justify-end mb-4">
+      <ExportToExcel
+  data={cases}
+  columns={columns}
+  fileName="Child_Marriage_Cases"
+/>
+</div>
       <DataTable data={cases} columns={columns} onEdit={handleEdit} onDelete={handleDelete} />
     </div>
   );

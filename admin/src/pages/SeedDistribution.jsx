@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
-import { createSeedDistribution } from '../utils/api';
+import React, {useEffect, useState } from 'react';
+import DataTable from '../components/DataTable';
+import ExportToExcel from "../components/ExportToExcel";
+
+
+import { 
+  createSeedDistribution,
+  getSeedDistributions,
+  updateSeedDistribution,
+  deleteSeedDistribution
+} from '../utils/api';
+
 
 
 const SeedDistribution = () => {
+
+  const [submissions, setSubmissions] = useState([]);
+const [editing, setEditing] = useState(null);
+
   const initialState = {
     panchayat: '',
     revenueVillage: '',
@@ -22,6 +36,19 @@ const SeedDistribution = () => {
     intercrop: '',
     silage: ''
   };
+
+  const fetchSubmissions = async () => {
+  try {
+    const res = await getSeedDistributions();
+    setSubmissions(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+useEffect(() => {
+  fetchSubmissions();
+}, []);
 
   const revenueVillageOptions = [
   "Balaitha","Pirnagar","Muras","Kanjari","Telihar","Bela Noabad",
@@ -51,17 +78,82 @@ const panchayatOptions = [
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();  // STOP page reload
+  e.preventDefault();
 
   try {
-    await createSeedDistribution(formData);
+    if (editing) {
+      await updateSeedDistribution(editing._id, formData);
+    } else {
+      await createSeedDistribution(formData);
+    }
+
     alert("Saved successfully!");
     setFormData(initialState);
+    setEditing(null);
+    fetchSubmissions();
+
   } catch (error) {
     console.error(error);
     alert("Error saving data");
   }
 };
+
+const handleEdit = (item) => {
+  setFormData(item);
+  setEditing(item);
+};
+
+const handleDelete = async (id) => {
+  if (!window.confirm('Are you sure you want to delete this slider?')) return;
+
+  try {
+    await deleteSeedDistribution(id);
+    fetchSubmissions();
+  } catch (error) {
+    console.error('Failed to delete slider:', error);
+      alert('Failed to delete slider');
+  }
+};
+
+
+const columns = [
+  { header: "Panchayat", key: "panchayat" },
+  { header: "Revenue Village", key: "revenueVillage" },
+  { header: "Tola & Ward", key: "tolaNameWardNo" },
+  { header: "CRP Name", key: "crpName" },
+  { header: "Farmer Name", key: "farmerName" },
+  { header: "Father/Husband", key: "fatherHusbandName" },
+  { header: "Mobile", key: "mobileNumber" },
+  { header: "Aadhar", key: "aadharNumber" },
+
+  { header: "Maize Seed Packet", key: "maizeSeedPacket" },
+  { header: "Zinc Sulphate (kg)", key: "zincSulphate" },
+  { header: "Atrazine (g)", key: "atrazine" },
+  { header: "Oorja (kg)", key: "oorja" },
+  { header: "Gypsum (kg)", key: "gypsum" },
+
+  {
+    header: "Sowing Date",
+    key: "sowingDate",
+    render: (item) =>
+      item.sowingDate
+        ? new Date(item.sowingDate).toLocaleDateString()
+        : "-"
+  },
+  {
+    header: "Harvest Date",
+    key: "expectedHarvestingDate",
+    render: (item) =>
+      item.expectedHarvestingDate
+        ? new Date(item.expectedHarvestingDate).toLocaleDateString()
+        : "-"
+  },
+
+  { header: "Intercrop", key: "intercrop" },
+  { header: "Silage", key: "silage" }
+];
+
+
 
 
   const inputClasses =
@@ -70,7 +162,9 @@ const panchayatOptions = [
   const requiredStar = <span className="text-red-500">*</span>;
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    // <div className="p-6 bg-gray-100 min-h-screen ">
+    <div className="p-6 bg-gray-100 min-h-screen overflow-x-hidden">
+
       <div className="max-w-7xl mx-auto bg-white p-8 rounded-xl shadow-lg">
         <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">
           Seed Distribution Form
@@ -265,7 +359,31 @@ const panchayatOptions = [
           </div>
 
         </form>
-      </div>
+        <div className="flex justify-end mt-4">
+      <ExportToExcel
+    data={submissions}
+    columns={columns}
+    fileName="Seed_Distribution"
+  />
+</div>
+ </div>
+
+
+ <div className="max-w-7xl mx-auto mt-6">
+  {/* Scrollable Table Container */}
+  <div className="overflow-x-auto shadow rounded-lg border border-gray-200 mt-4">
+    <div className="min-w-max">
+      <DataTable
+        data={submissions}
+        columns={columns}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    </div>
+  </div>
+</div>
+
+
     </div>
   );
 };

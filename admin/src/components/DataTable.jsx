@@ -31,3 +31,4 @@ const DataTable = ({ data, columns, onEdit, onDelete }) => {
 };
 
 export default DataTable;
+
