@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
@@ -27,8 +29,29 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(helmet());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many requests, please try again later.' }
+});
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many login attempts, please try again later.' }
+});
+
+app.use('/api', apiLimiter);
+app.use('/api/auth/login', loginLimiter);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -77,9 +100,7 @@ mongoose
   });
 
 // Routes
-app.use('/api/sliders', require('./routes/sliderRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/child-marriage-cases', require('./routes/childMarriageCaseRoutes'));
 app.use('/api/users', require('./routes/userRoutes.js'));
 app.use('/api/seed-distributions', require('./routes/seedDistributionRoutes'));
@@ -90,8 +111,7 @@ app.use('/api/seed-distributions', require('./routes/seedDistributionRoutes'));
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(err.status || 500).json({
-    message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err : {}
+    message: err.message || 'Internal Server Error'
   });
 });
 

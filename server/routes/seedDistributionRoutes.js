@@ -12,8 +12,8 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 router.get('/', getAllSeedDistributions);
 router.get('/:id', getSeedDistributionById);
-router.post('/', createSeedDistribution);
-router.put('/:id', updateSeedDistribution);
-router.delete('/:id', deleteSeedDistribution);
+router.post('/', protect, createSeedDistribution);
+router.put('/:id', protect, updateSeedDistribution);
+router.delete('/:id', protect, admin, deleteSeedDistribution);
 
 module.exports = router;

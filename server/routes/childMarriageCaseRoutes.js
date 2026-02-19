@@ -8,14 +8,23 @@ const {
   updateCase,
   deleteCase,
 } = require('../controllers/childMarriageCaseController');
-//const authMiddleware = require('../middleware/authMiddleware');
 const { protect, admin } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
+
+const handleUploadError = (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      req.file = null;
+    }
+    next();
+  });
+};
 
 
 router.get('/', getAllCases);
 router.get('/:id', getCaseById);
-router.post('/',  createCase);
-router.put('/:id',  updateCase);
-router.delete('/:id',  deleteCase);
+router.post('/', protect, handleUploadError, createCase);
+router.put('/:id', protect, handleUploadError, updateCase);
+router.delete('/:id', protect, admin, deleteCase);
 
 module.exports = router;

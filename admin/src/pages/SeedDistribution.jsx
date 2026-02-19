@@ -162,11 +162,10 @@ const columns = [
   const requiredStar = <span className="text-red-500">*</span>;
 
   return (
-    // <div className="p-6 bg-gray-100 min-h-screen ">
-    <div className="p-6 bg-gray-100 min-h-screen overflow-x-hidden">
+    <div className="p-3 sm:p-6 bg-gray-100 min-h-screen overflow-x-hidden">
 
-      <div className="max-w-7xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">
+      <div className="w-full bg-white p-4 sm:p-8 rounded-xl shadow-lg">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-800 border-b pb-4">
           Seed Distribution Form
         </h1>
 
@@ -341,25 +340,25 @@ const columns = [
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-4 pt-6 border-t">
+          <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 pt-6 border-t">
             <button
               type="button"
               onClick={() => setFormData(initialState)}
-              className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              className="w-full sm:w-auto px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
             >
               Reset
             </button>
 
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               Submit
             </button>
           </div>
 
         </form>
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-start sm:justify-end mt-4">
       <ExportToExcel
     data={submissions}
     columns={columns}
@@ -369,9 +368,41 @@ const columns = [
  </div>
 
 
- <div className="max-w-7xl mx-auto mt-6">
-  {/* Scrollable Table Container */}
-  <div className="overflow-x-auto shadow rounded-lg border border-gray-200 mt-4">
+ <div className="w-full mt-6">
+  <div className="md:hidden space-y-3">
+    {submissions.map((item) => (
+      <div key={item._id} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+        <div className="space-y-2 text-sm text-gray-700">
+          {columns.map((col) => (
+            <div key={col.key}>
+              <span className="font-semibold">{col.header}: </span>
+              <span>
+                {col.render
+                  ? col.render(item)
+                  : item[col.key] || "-"}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={() => handleEdit(item)}
+            className="flex-1 bg-blue-500 text-white px-3 py-2 rounded"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDelete(item._id)}
+            className="flex-1 bg-red-500 text-white px-3 py-2 rounded"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div className="hidden md:block overflow-x-auto shadow rounded-lg border border-gray-200 mt-4">
     <div className="min-w-max">
       <DataTable
         data={submissions}

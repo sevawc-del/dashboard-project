@@ -1,5 +1,6 @@
 // Child Marriage Case Controller
 const ChildMarriageCase = require('../models/ChildMarriageCase');
+const cloudinary = require('../config/cloudinary');
 
 const getAllCases = async (req, res) => {
   try {
@@ -21,8 +22,21 @@ const getCaseById = async (req, res) => {
 };
 
 const createCase = async (req, res) => {
-  const childMarriageCase = new ChildMarriageCase(req.body);
   try {
+    let imageUrl = req.body.image;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'childmarriage',
+        resource_type: 'image'
+      });
+      imageUrl = result.secure_url;
+    }
+
+    const childMarriageCase = new ChildMarriageCase({
+      ...req.body,
+      image: imageUrl || ''
+    });
+
     const newCase = await childMarriageCase.save();
     res.status(201).json(newCase);
   } catch (error) {
@@ -32,9 +46,27 @@ const createCase = async (req, res) => {
 
 const updateCase = async (req, res) => {
   try {
+    let imageUrl = req.body.image;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'manav-seva/childmarriage',
+        resource_type: 'image'
+      });
+      imageUrl = result.secure_url;
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: Date.now()
+    };
+
+    if (imageUrl) {
+      updateData.image = imageUrl;
+    }
+
     const updatedCase = await ChildMarriageCase.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
+      req.params.id,
+      updateData,
       { new: true }
     );
     if (!updatedCase) return res.status(404).json({ message: 'Case not found' });

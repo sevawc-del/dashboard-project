@@ -30,11 +30,12 @@ const createUser = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+    const safeRole = role || 'user';
     const user = new User({
       username,
       email,
       password: hashedPassword,
-      role: role || 'admin'
+      role: safeRole
     });
     await user.save();
     res.status(201).json({ message: 'User created successfully' });

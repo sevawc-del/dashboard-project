@@ -11,6 +11,7 @@ import {
 
 const ManageChildMarriageCases = () => {
   const [cases, setCases] = useState([]);
+  const [imageFileName, setImageFileName] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -41,10 +42,23 @@ const ManageChildMarriageCases = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const dataToSend = {
-        ...formData,
-        victimAge: formData.victimAge ? parseInt(formData.victimAge) : undefined
-      };
+      const dataToSend = new FormData();
+      dataToSend.append('title', formData.title || '');
+      dataToSend.append('description', formData.description || '');
+      dataToSend.append('location', formData.location || '');
+      dataToSend.append('status', formData.status || 'pending');
+
+      if (formData.victimAge) {
+        dataToSend.append('victimAge', parseInt(formData.victimAge, 10));
+      }
+
+      if (formData.date) {
+        dataToSend.append('date', formData.date);
+      }
+
+      if (formData.image) {
+        dataToSend.append('image', formData.image);
+      }
       
       if (editing) {
         await updateChildMarriageCase(editing._id, dataToSend);
@@ -60,6 +74,7 @@ const ManageChildMarriageCases = () => {
         status: 'pending',
         image: ''
       });
+      setImageFileName('');
       setEditing(null);
       fetchCases();
     } catch (error) {
@@ -77,7 +92,16 @@ const ManageChildMarriageCases = () => {
       status: item.status || 'pending',
       image: item.image || ''
     });
+    setImageFileName('');
     setEditing(item);
+  };
+
+  const handleImageFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageFileName(file.name);
+    setFormData((prev) => ({ ...prev, image: file }));
   };
 
   const handleDelete = async (id) => {
@@ -169,13 +193,32 @@ const ManageChildMarriageCases = () => {
             <option value="resolved">Resolved</option>
             <option value="closed">Closed</option>
           </select>
-          <input
-            type="text"
-            placeholder="Image URL"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            className="w-full p-2 border rounded"
-          />
+          <div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={typeof formData.image === 'string' ? formData.image : ''}
+                onChange={(e) => {
+                  setFormData({ ...formData, image: e.target.value });
+                  setImageFileName('');
+                }}
+                className="w-full p-2 pr-28 border rounded"
+              />
+              <label className="absolute right-1 top-1/2 -translate-y-1/2 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer hover:bg-gray-300 text-sm whitespace-nowrap">
+                Choose File
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageFileChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+            <span className="text-sm text-gray-600 mt-1 block truncate">
+              {imageFileName || 'No file selected'}
+            </span>
+          </div>
         </div>
         <textarea
           placeholder="Description"
@@ -202,6 +245,7 @@ const ManageChildMarriageCases = () => {
                 status: 'pending',
                 image: ''
               });
+              setImageFileName('');
             }}
             className="bg-gray-500 text-white px-4 py-2 rounded mt-4 ml-2 hover:bg-gray-600"
           >
